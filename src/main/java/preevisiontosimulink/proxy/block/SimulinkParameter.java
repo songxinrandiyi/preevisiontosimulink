@@ -1,28 +1,40 @@
 package preevisiontosimulink.proxy.block;
 
+// Class representing a parameter for a Simulink block with a generic type T
 public class SimulinkParameter<T> {
-	private String name;
-	private SimulinkBlock parent;
-	private T value = null;
+    
+    // Name of the parameter
+    private String name;
+    
+    // Reference to the parent Simulink block
+    private SimulinkBlock parent;
+    
+    // Value of the parameter, initialized to null
+    private T value = null;
 
-	public SimulinkParameter(String name, SimulinkBlock parent) {
-		this.name = name;
-		this.parent = parent;
-	}
+    // Constructor initializing the parameter with a name and its parent block
+    public SimulinkParameter(String name, SimulinkBlock parent) {
+        this.name = name; // Set the name of the parameter
+        this.parent = parent; // Set the parent block
+    }
 
-	public String getName() {
-		return name;
-	}
+    // Method to get the name of the parameter
+    public String getName() {
+        return name; // Return the parameter's name
+    }
 
-	public SimulinkBlock getParent() {
-		return parent;
-	}
+    // Method to get the parent block of this parameter
+    public SimulinkBlock getParent() {
+        return parent; // Return the parent Simulink block
+    }
 
-	public T getValue() {
-		return value;
-	}
+    // Method to get the value of the parameter
+    public T getValue() {
+        return value; // Return the current value of the parameter
+    }
 
-	public void setValue(T value) {
-		this.value = value;
-	}
+    // Method to set the value of the parameter
+    public void setValue(T value) {
+        this.value = value; // Assign the new value to the parameter
+    }
 }

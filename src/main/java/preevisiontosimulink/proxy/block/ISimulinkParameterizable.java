@@ -2,10 +2,15 @@ package preevisiontosimulink.proxy.block;
 
 import java.util.List;
 
+// Interface representing a parameterizable entity in a Simulink context
 public interface ISimulinkParameterizable {
-	List<SimulinkParameter<?>> getParameters();
+    
+    // Get a list of all parameters associated with this parameterizable entity
+    List<SimulinkParameter<?>> getParameters();
 
-	<T> void addParameter(SimulinkParameter<T> parameter);
+    // Add a parameter of a specified type to the entity
+    <T> void addParameter(SimulinkParameter<T> parameter);
 
-	<T> void setParameter(String name, T value);
+    // Set the value of a parameter by its name
+    <T> void setParameter(String name, T value);
 }

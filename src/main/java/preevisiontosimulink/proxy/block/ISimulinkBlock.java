@@ -7,28 +7,41 @@ import com.mathworks.engine.MatlabEngine;
 import preevisiontosimulink.proxy.port.ISimulinkPort;
 import preevisiontosimulink.proxy.system.ISimulinkSystem;
 
+// Interface representing a Simulink block in a system
 public interface ISimulinkBlock extends ISimulinkParameterizable {
-	String getName();
+    
+    // Get the name of the block
+    String getName();
 
-	void setName(String name);
+    // Set a new name for the block
+    void setName(String name);
 
-	ISimulinkPort addInPort(ISimulinkPort port);
+    // Add an input port to the block and return it
+    ISimulinkPort addInPort(ISimulinkPort port);
 
-	ISimulinkPort getInPort(int index);
+    // Get the input port at the specified index
+    ISimulinkPort getInPort(int index);
 
-	List<ISimulinkPort> getInPorts();
+    // Get a list of all input ports for the block
+    List<ISimulinkPort> getInPorts();
 
-	ISimulinkPort addOutPort(ISimulinkPort port);
+    // Add an output port to the block and return it
+    ISimulinkPort addOutPort(ISimulinkPort port);
 
-	ISimulinkPort getOutPort(int index);
+    // Get the output port at the specified index
+    ISimulinkPort getOutPort(int index);
 
-	List<ISimulinkPort> getOutPorts();
+    // Get a list of all output ports for the block
+    List<ISimulinkPort> getOutPorts();
 
-	ISimulinkSystem getParent();
+    // Get the parent system of this block
+    ISimulinkSystem getParent();
 
-	void generateModel(MatlabEngine matlab);
+    void generateModel(MatlabEngine matlab);
 
-	void initialize();
+    // Initialize the block, setting up necessary parameters or states
+    void initialize();
 
-	String generateCombinedPath();
+    // Generate a combined path representation for the block
+    String generateCombinedPath();
 }

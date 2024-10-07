@@ -6,7 +6,7 @@ import preevisiontosimulink.library.DCVoltageSource;
 import preevisiontosimulink.library.ElectricalReference;
 import preevisiontosimulink.library.Resistor;
 import preevisiontosimulink.library.SolverConfiguration;
-import preevisiontosimulink.proxy.relation.SimulinkRelation;
+import preevisiontosimulink.proxy.connection.SimulinkConnection;
 import preevisiontosimulink.proxy.system.SimulinkSystem;
 import preevisiontosimulink.proxy.system.SimulinkSystemType;
 
@@ -31,12 +31,12 @@ public class ModelGenerator {
 
 		// Bind blocks
 		system.addRelation(
-				new SimulinkRelation(system.getBlock("DC").getInPort(0), system.getBlock("R1").getInPort(0), system));
-		system.addRelation(new SimulinkRelation(system.getBlock("R1").getOutPort(0),
+				new SimulinkConnection(system.getBlock("DC").getInPort(0), system.getBlock("R1").getInPort(0), system));
+		system.addRelation(new SimulinkConnection(system.getBlock("R1").getOutPort(0),
 				system.getBlock("Ref1").getInPort(0), system));
-		system.addRelation(new SimulinkRelation(system.getBlock("DC").getOutPort(0),
+		system.addRelation(new SimulinkConnection(system.getBlock("DC").getOutPort(0),
 				system.getBlock("Ref1").getInPort(0), system));
-		system.addRelation(new SimulinkRelation(system.getBlock("Solver1").getInPort(0),
+		system.addRelation(new SimulinkConnection(system.getBlock("Solver1").getInPort(0),
 				system.getBlock("Ref1").getInPort(0), system));
 
 		try {

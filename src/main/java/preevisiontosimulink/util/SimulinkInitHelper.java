@@ -28,14 +28,14 @@ import preevisiontosimulink.parser.kblelements.GeneralWire;
 import preevisiontosimulink.parser.kblelements.GeneralWireOccurrence;
 import preevisiontosimulink.proxy.block.ISimulinkBlock;
 import preevisiontosimulink.proxy.block.SimulinkBlock;
+import preevisiontosimulink.proxy.connection.SimulinkConnection;
+import preevisiontosimulink.proxy.connection.SimulinkSubToSubConnection;
 import preevisiontosimulink.proxy.port.Contact;
-import preevisiontosimulink.proxy.relation.SimulinkRelation;
-import preevisiontosimulink.proxy.relation.SimulinkSubToSubRelation;
 import preevisiontosimulink.proxy.system.SimulinkSubsystem;
 import preevisiontosimulink.proxy.system.SimulinkSubsystemType;
 import preevisiontosimulink.proxy.system.SimulinkSystem;
 
-public class SimulinkSubsystemInitHelper {
+public class SimulinkInitHelper {
 	public static void initStecker(SimulinkSubsystem subsystem) {
 		SimulinkSubsystemHelper.reorderConnections(subsystem);
 		subsystem.addBlock(new ElectricalReference(subsystem, subsystem.getName() + "_E"));
@@ -47,13 +47,13 @@ public class SimulinkSubsystemInitHelper {
 				subsystem.addBlock(new PSSimulinkConverter(subsystem, inPort.getName() + "_PS"));
 				subsystem.addBlock(new Scope(subsystem, inPort.getName() + "_Display"));
 
-				subsystem.addRelation(new SimulinkRelation(inPort.getInPort(0),
+				subsystem.addRelation(new SimulinkConnection(inPort.getInPort(0),
 						subsystem.getBlock(inPort.getName() + "_I").getInPort(0), subsystem));
-				subsystem.addRelation(new SimulinkRelation(subsystem.getBlock(inPort.getName() + "_I").getOutPort(1),
+				subsystem.addRelation(new SimulinkConnection(subsystem.getBlock(inPort.getName() + "_I").getOutPort(1),
 						subsystem.getBlock(subsystem.getName() + "_E").getInPort(0), subsystem));
-				subsystem.addRelation(new SimulinkRelation(subsystem.getBlock(inPort.getName() + "_I").getOutPort(0),
+				subsystem.addRelation(new SimulinkConnection(subsystem.getBlock(inPort.getName() + "_I").getOutPort(0),
 						subsystem.getBlock(inPort.getName() + "_PS").getInPort(0), subsystem));
-				subsystem.addRelation(new SimulinkRelation(subsystem.getBlock(inPort.getName() + "_PS").getOutPort(0),
+				subsystem.addRelation(new SimulinkConnection(subsystem.getBlock(inPort.getName() + "_PS").getOutPort(0),
 						subsystem.getBlock(inPort.getName() + "_Display").getInPort(0), subsystem));
 			}
 		}
@@ -76,14 +76,14 @@ public class SimulinkSubsystemInitHelper {
 		subsystem.addBlock(new Scope(subsystem, "Display"));
 		ISimulinkBlock display = subsystem.getBlock("Display");
 
-		subsystem.addRelation(new SimulinkRelation(inPort.getInPort(0), resistor.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(inPort.getInPort(0), resistor.getInPort(0), subsystem));
 
-		subsystem.addRelation(new SimulinkRelation(resistor.getOutPort(0), outPort.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(resistor.getOutPort(0), outPort.getInPort(0), subsystem));
 
-		subsystem.addRelation(new SimulinkRelation(resistor.getOutPort(0), voltageSensor.getOutPort(1), subsystem));
-		subsystem.addRelation(new SimulinkRelation(resistor.getInPort(0), voltageSensor.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(voltageSensor.getOutPort(0), converter.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(converter.getOutPort(0), display.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(resistor.getOutPort(0), voltageSensor.getOutPort(1), subsystem));
+		subsystem.addRelation(new SimulinkConnection(resistor.getInPort(0), voltageSensor.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(voltageSensor.getOutPort(0), converter.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(converter.getOutPort(0), display.getInPort(0), subsystem));
 	}
 
 	public static void initThermalKabel(SimulinkSubsystem subsystem, Connection connection) {
@@ -122,20 +122,20 @@ public class SimulinkSubsystemInitHelper {
 		inverse.setParameter("Inputs", "/");
 		square.setParameter("Operator", "square");
 		
-		subsystem.addRelation(new SimulinkRelation(inPort.getOutPort(0), square.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(square.getOutPort(0), resistance.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(resistance.getOutPort(0), powerDiff.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(powerDiff.getOutPort(0), thermalCapacityInverse.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(thermalCapacityInverse.getOutPort(0), integrator.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(integrator.getOutPort(0), outPort.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(inPort.getOutPort(0), square.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(square.getOutPort(0), resistance.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(resistance.getOutPort(0), powerDiff.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(powerDiff.getOutPort(0), thermalCapacityInverse.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(thermalCapacityInverse.getOutPort(0), integrator.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(integrator.getOutPort(0), outPort.getInPort(0), subsystem));
 		
-		subsystem.addRelation(new SimulinkRelation(integrator.getOutPort(0), temperatureDiff.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(environmentTemperature.getOutPort(0), 
+		subsystem.addRelation(new SimulinkConnection(integrator.getOutPort(0), temperatureDiff.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(environmentTemperature.getOutPort(0), 
 				temperatureDiff.getInPort(1), subsystem));
-		subsystem.addRelation(new SimulinkRelation(temperatureDiff.getOutPort(0), product.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(thermalResistance.getOutPort(0), inverse.getInPort(0), subsystem));
-		subsystem.addRelation(new SimulinkRelation(inverse.getOutPort(0), product.getInPort(1), subsystem));
-		subsystem.addRelation(new SimulinkRelation(product.getOutPort(0), powerDiff.getInPort(1), subsystem));
+		subsystem.addRelation(new SimulinkConnection(temperatureDiff.getOutPort(0), product.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(thermalResistance.getOutPort(0), inverse.getInPort(0), subsystem));
+		subsystem.addRelation(new SimulinkConnection(inverse.getOutPort(0), product.getInPort(1), subsystem));
+		subsystem.addRelation(new SimulinkConnection(product.getOutPort(0), powerDiff.getInPort(1), subsystem));
 	}
 
 	public static void initConnection(Connection connection, SimulinkSystem system, SimulinkSubsystem subsystem,
@@ -163,25 +163,25 @@ public class SimulinkSubsystemInitHelper {
 		
 		String pathStart;
 		String pathEnd;
-		SimulinkSubToSubRelation startRelation;
-		SimulinkSubToSubRelation endRelation;
+		SimulinkSubToSubConnection startRelation;
+		SimulinkSubToSubConnection endRelation;
 		switch (type) {
 		case KABEL:
 			pathStart = startConnectorName + "_" + startStecker.getConnectionPath(startPin.toString()) + "_" + name
 					+ "_LConn1";
 			pathEnd = endConnectorName + "_" + endStecker.getConnectionPath(endPin.toString()) + "_" + name
 					+ "_RConn1";
-			startRelation = new SimulinkSubToSubRelation(startConnectorName,
+			startRelation = new SimulinkSubToSubConnection(startConnectorName,
 					startStecker.getConnectionPath(startPin.toString()), name, "LConn1", system);
-			endRelation = new SimulinkSubToSubRelation(endConnectorName,
+			endRelation = new SimulinkSubToSubConnection(endConnectorName,
 					endStecker.getConnectionPath(endPin.toString()), name, "RConn1", system);
 			break;
 		case THERMAL_KABEL:
 			pathStart = startConnectorName + "_" + startStecker.getPortPath(startPin.toString()) + "_" + name + "_1";
 			pathEnd = endConnectorName + "_" + endStecker.getPortPath(endPin.toString()) + "_" + name + "_1";
-			startRelation = new SimulinkSubToSubRelation(startConnectorName,
+			startRelation = new SimulinkSubToSubConnection(startConnectorName,
 					startStecker.getPortPath(startPin.toString()), name, "1", system);
-			endRelation = new SimulinkSubToSubRelation(name, "1", endConnectorName,
+			endRelation = new SimulinkSubToSubConnection(name, "1", endConnectorName,
 					endStecker.getPortPath(endPin.toString()), system);
 			break;
 		default:
@@ -189,9 +189,9 @@ public class SimulinkSubsystemInitHelper {
 					+ "_LConn1";
 			pathEnd = endConnectorName + "_" + endStecker.getConnectionPath(endPin.toString()) + "_" + name
 					+ "_RConn1";
-			startRelation = new SimulinkSubToSubRelation(startConnectorName,
+			startRelation = new SimulinkSubToSubConnection(startConnectorName,
 					startStecker.getConnectionPath(startPin.toString()), name, "LConn1", system);
-			endRelation = new SimulinkSubToSubRelation(endConnectorName,
+			endRelation = new SimulinkSubToSubConnection(endConnectorName,
 					endStecker.getConnectionPath(endPin.toString()), name, "RConn1", system);
 			break;
 		}
@@ -247,7 +247,7 @@ public class SimulinkSubsystemInitHelper {
 				subsystem.addInConnection(new LConnection(subsystem, cavityNumber.toString()));
 				subsystem.addNumOfPins();
 			}
-			SimulinkSubsystemInitHelper.initStecker(subsystem);
+			SimulinkInitHelper.initStecker(subsystem);
 		}
 	}
 	
@@ -293,7 +293,7 @@ public class SimulinkSubsystemInitHelper {
 			ISimulinkBlock currentSource = subsystemStart.addBlock(new Constant(subsystemStart,
 					"CurrentSource_" + startPin.toString()));
 			currentSource.setParameter("Value", connection.getCurrent());
-			subsystemStart.addRelation(new SimulinkRelation(currentSource.getOutPort(0), 
+			subsystemStart.addRelation(new SimulinkConnection(currentSource.getOutPort(0), 
 					outPort.getInPort(0), subsystemStart));
 			
 			String endConnectorName = endConnector.getLargeId() + "_" + endPin.toString() + "_Right";
@@ -307,7 +307,7 @@ public class SimulinkSubsystemInitHelper {
             SimulinkSubsystemHelper.reorderConnections(subsystemEnd);
 			ISimulinkBlock scope = subsystemEnd.addBlock(new Scope(subsystemEnd,
 					"Scope_" + endPin.toString()));
-			subsystemEnd.addRelation(new SimulinkRelation(inPort.getOutPort(0), 
+			subsystemEnd.addRelation(new SimulinkConnection(inPort.getOutPort(0), 
 					scope.getInPort(0), subsystemEnd));
 		}
 	}

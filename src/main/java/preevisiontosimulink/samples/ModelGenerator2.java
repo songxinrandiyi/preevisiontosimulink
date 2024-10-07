@@ -11,8 +11,8 @@ import preevisiontosimulink.library.OutPort;
 import preevisiontosimulink.library.Scope;
 import preevisiontosimulink.library.SineWave;
 import preevisiontosimulink.proxy.block.ISimulinkBlock;
-import preevisiontosimulink.proxy.relation.SimulinkExternRelation;
-import preevisiontosimulink.proxy.relation.SimulinkRelation;
+import preevisiontosimulink.proxy.connection.SimulinkExternConnection;
+import preevisiontosimulink.proxy.connection.SimulinkConnection;
 import preevisiontosimulink.proxy.system.SimulinkSubsystem;
 import preevisiontosimulink.proxy.system.SimulinkSystem;
 import preevisiontosimulink.proxy.system.SimulinkSystemType;
@@ -61,22 +61,22 @@ public class ModelGenerator2 {
 		lastSubsystem.getBlock("Gain2").setParameter("Gain", 10);
 		lastSubsystem.getBlock("Add1").setParameter("Inputs", "+-");
 
-		system.addRelation(new SimulinkExternRelation(system.getBlock("Sine1").getOutPort(0), "Subsystem1",
+		system.addRelation(new SimulinkExternConnection(system.getBlock("Sine1").getOutPort(0), "Subsystem1",
 				lastSubsystem.getPortPath("Inport1"), system, 0));
-		system.addRelation(new SimulinkExternRelation(system.getBlock("Sine2").getOutPort(0), "Subsystem1",
+		system.addRelation(new SimulinkExternConnection(system.getBlock("Sine2").getOutPort(0), "Subsystem1",
 				lastSubsystem.getPortPath("Inport2"), system, 0));
-		system.addRelation(new SimulinkExternRelation(system.getBlock("Scope1").getInPort(0), "Subsystem1",
+		system.addRelation(new SimulinkExternConnection(system.getBlock("Scope1").getInPort(0), "Subsystem1",
 				lastSubsystem.getPortPath("Outport1"), system, 1));
 
-		system.addRelation(new SimulinkRelation(lastSubsystem.getInPort("Inport1").getOutPort(0),
+		system.addRelation(new SimulinkConnection(lastSubsystem.getInPort("Inport1").getOutPort(0),
 				lastSubsystem.getBlock("Gain1").getInPort(0), lastSubsystem));
-		system.addRelation(new SimulinkRelation(lastSubsystem.getInPort("Inport2").getOutPort(0),
+		system.addRelation(new SimulinkConnection(lastSubsystem.getInPort("Inport2").getOutPort(0),
 				lastSubsystem.getBlock("Gain2").getInPort(0), lastSubsystem));
-		system.addRelation(new SimulinkRelation(lastSubsystem.getBlock("Gain1").getOutPort(0),
+		system.addRelation(new SimulinkConnection(lastSubsystem.getBlock("Gain1").getOutPort(0),
 				lastSubsystem.getBlock("Add1").getInPort(0), lastSubsystem));
-		system.addRelation(new SimulinkRelation(lastSubsystem.getBlock("Gain2").getOutPort(0),
+		system.addRelation(new SimulinkConnection(lastSubsystem.getBlock("Gain2").getOutPort(0),
 				lastSubsystem.getBlock("Add1").getInPort(1), lastSubsystem));
-		system.addRelation(new SimulinkRelation(lastSubsystem.getBlock("Add1").getOutPort(0),
+		system.addRelation(new SimulinkConnection(lastSubsystem.getBlock("Add1").getOutPort(0),
 				lastSubsystem.getOutPort("Outport1").getInPort(0), lastSubsystem));
 
 		try {

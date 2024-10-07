@@ -15,29 +15,32 @@ import preevisiontosimulink.library.Resistor;
 import preevisiontosimulink.library.VoltageSensor;
 import preevisiontosimulink.pojo.KabelInformation;
 import preevisiontosimulink.proxy.block.ISimulinkBlock;
+import preevisiontosimulink.proxy.connection.ISimulinkConnection;
 import preevisiontosimulink.proxy.port.Contact;
-import preevisiontosimulink.proxy.relation.ISimulinkRelation;
 import preevisiontosimulink.util.SimulinkSubsystemHelper;
 
+//Class representing a subsystem in Simulink
 public class SimulinkSubsystem implements ISimulinkSystem {
 	private static final String BLOCK_NAME = "Subsystem";
 	private static final String BLOCK_PATH = "simulink/Ports & Subsystems/Subsystem";
-	private ISimulinkSystem parent;
+	private ISimulinkSystem parent; // Reference to the parent system
 	private String name;
 	private static int num = 1;
 	private SimulinkSubsystemType type;
 	private Integer numOfPins = 0;
 	private KabelInformation kblInformation = new KabelInformation();
 
+	// Lists to manage connections, ports, blocks, relations, and sub-subsystems
 	private List<LConnection> inConnections = new ArrayList<>();
 	private List<RConnection> outConnections = new ArrayList<>();
 	private List<InPort> inPorts = new ArrayList<>();
 	private List<OutPort> outPorts = new ArrayList<>();
 	private List<ISimulinkBlock> blockList = new ArrayList<>();
-	private List<ISimulinkRelation> relationList = new ArrayList<>();
+	private List<ISimulinkConnection> relationList = new ArrayList<>();
 	private List<SimulinkSubsystem> subsystemList = new ArrayList<>();
 	private List<Contact> contactPoints = new ArrayList<>();
 
+	// Constructor for creating a new SimulinkSubsystem
 	public SimulinkSubsystem(ISimulinkSystem parent, String name, SimulinkSubsystemType type) {
 		this.parent = parent;
 		if (name == null) {
@@ -69,6 +72,7 @@ public class SimulinkSubsystem implements ISimulinkSystem {
 		this.numOfPins++;
 	}
 
+	// Retrieve contacts by the pin number
 	public List<Contact> getContactsByPinNumber(Integer pinNumberFrom) {
 		if (pinNumberFrom == null) {
 			throw new IllegalArgumentException("Pin number cannot be null");
@@ -280,7 +284,7 @@ public class SimulinkSubsystem implements ISimulinkSystem {
 	}
 
 	@Override
-	public ISimulinkRelation addRelation(ISimulinkRelation relation) {
+	public ISimulinkConnection addRelation(ISimulinkConnection relation) {
 		relationList.add(relation);
 		return relation;
 	}
@@ -357,7 +361,7 @@ public class SimulinkSubsystem implements ISimulinkSystem {
 			}
 
 			// Generate the Simulink model for each relation in the relationList
-			for (ISimulinkRelation relation : relationList) {
+			for (ISimulinkConnection relation : relationList) {
 				relation.generateModel(matlab);
 			}
 
@@ -385,7 +389,7 @@ public class SimulinkSubsystem implements ISimulinkSystem {
 	}
 
 	@Override
-	public List<ISimulinkRelation> getRelationList() {
+	public List<ISimulinkConnection> getRelationList() {
 		return relationList;
 	}
 
@@ -412,8 +416,8 @@ public class SimulinkSubsystem implements ISimulinkSystem {
 	}
 
 	@Override
-	public ISimulinkRelation getRelation(String name) {
-		for (ISimulinkRelation relation : relationList) {
+	public ISimulinkConnection getRelation(String name) {
+		for (ISimulinkConnection relation : relationList) {
 			if (relation.getName().equals(name)) {
 				return relation;
 			}

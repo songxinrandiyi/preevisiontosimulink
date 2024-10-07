@@ -25,12 +25,15 @@ import preevisiontosimulink.parser.KBLParser;
 import preevisiontosimulink.parser.kblelements.GeneralWire;
 import preevisiontosimulink.util.UIUtils;
 
+//Class representing a window for managing general wire information
 public class GeneralWireWindow {
 
+	// Static arrays defining available cross-sections, insulation thicknesses, and materials
     static final String[] CROSS_SECTIONS = { "0.35", "0.5", "1", "1.5", "2.5", "6" };
     static final String[] INSULATION_THICKNESSES = { "0.25", "0.3", "0.35", "0.5", "1" };
     static final String[] MATERIALS = { "Cu", "Al" };
 
+    // Instance variables for the window components and data
     private Display display;
     private Shell shell;
     private KBLParser thermalSimulation;
@@ -38,18 +41,22 @@ public class GeneralWireWindow {
     private Table table;
     private Label statusLabel;
 
+    // Constructor initializes the main components of the window
     public GeneralWireWindow(KBLParser thermalSimulation) {
-        this.thermalSimulation = thermalSimulation;
-        this.display = Display.getDefault();
-        this.shell = new Shell(display);
-        initializeShell();
-        createContent();
-        openShell();
+        this.thermalSimulation = thermalSimulation; // Parser for KBL data
+        this.display = Display.getDefault(); // SWT display for GUI
+        this.shell = new Shell(display); // Create the main shell
+        initializeShell(); // Set up shell properties
+        createContent(); // Create the content within the shell
+        openShell(); // Open the shell for user interaction
     }
 
+    // Method to initialize shell properties such as title and icon
     private void initializeShell() {
-        shell.setText("General Wire Information");
-        shell.setLayout(new GridLayout(1, false));
+        shell.setText("General Wire Information"); // Set window title
+        shell.setLayout(new GridLayout(1, false)); // Set layout
+
+        // Load and set the window icon
         InputStream inputStream = getClass().getResourceAsStream("/resources/Edag.png");
         if (inputStream != null) {
             Image icon = new Image(display, inputStream);
@@ -59,30 +66,35 @@ public class GeneralWireWindow {
         }
     }
 
+    // Method to create the content of the shell
     private void createContent() {
-        // Create the table
+        // Create the table to display wire information
         table = createTable();
-        validGeneralWires = thermalSimulation.getValidGeneralWires();
+        validGeneralWires = thermalSimulation.getValidGeneralWires(); // Get valid general wires from the parser
 
+        // If no valid wires found, display a message
         if (validGeneralWires.isEmpty()) {
             new Label(shell, SWT.NONE).setText("No valid General Wires found.");
         } else {
+            // Populate the table with the valid general wires
             for (GeneralWire wire : validGeneralWires) {
                 createTableItem(table, wire);
             }
         }
 
-        // Create buttons
+        // Create buttons for actions
         createButtons();
-        setupColumnListeners();
+        setupColumnListeners(); // Set up listeners for table columns
     }
 
+    // Method to create the table for displaying wire data
     private Table createTable() {
         Table table = new Table(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.CHECK);
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
-        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        table.setHeaderVisible(true); // Enable headers
+        table.setLinesVisible(true); // Show lines between rows
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); // Fill space in the layout
 
+        // Define the columns for the table
         createTableColumn(table, "", 50); // Column for checkboxes
         createTableColumn(table, "General Wire", 200);
         createTableColumn(table, "Connections", 400);
@@ -92,19 +104,22 @@ public class GeneralWireWindow {
         createTableColumn(table, "Material of the Cables", 150);
         createTableColumn(table, "Temperature Increase (K)", 200);
 
-        return table;
+        return table; // Return the created table
     }
 
+    // Method to create a single column in the table
     private void createTableColumn(Table table, String text, int width) {
         TableColumn column = new TableColumn(table, SWT.LEFT);
-        column.setText(text);
-        column.setWidth(width);
+        column.setText(text); // Set column header text
+        column.setWidth(width); // Set column width
     }
 
+    // Method to create a table item for a general wire
     private void createTableItem(Table table, GeneralWire wire) {
-        TableItem item = new TableItem(table, SWT.NONE);
-        item.setText(1, wire.getPartNumber());
+        TableItem item = new TableItem(table, SWT.NONE); // Create a new table item
+        item.setText(1, wire.getPartNumber()); // Set part number in the first column
 
+        // Create various controls for each column of the item
         createConnectionsCombo(table, item, wire);
         createCrossSectionCombo(table, item, wire);
         createCurrentText(table, item);
@@ -112,62 +127,70 @@ public class GeneralWireWindow {
         createMaterialCombo(table, item);
     }
 
+    // Method to create a Combo box for selecting connections
     private void createConnectionsCombo(Table table, TableItem item, GeneralWire wire) {
         Combo comboConnections = new Combo(table, SWT.DROP_DOWN | SWT.READ_ONLY);
+        // Populate combo with connection names
         String[] connections = wire.getConnections().stream()
                 .map(conn -> conn.getSignalName() != null ? conn.getSignalName() : conn.getId()).toArray(String[]::new);
-        comboConnections.setItems(connections);
+        comboConnections.setItems(connections); // Set items in the combo
 
         if (connections.length > 0) {
-            comboConnections.select(0);
+            comboConnections.select(0); // Select the first connection if available
         }
-        setEditorForTable(table, item, comboConnections, 2);
+        setEditorForTable(table, item, comboConnections, 2); // Set combo as the editor for the table cell
     }
 
+    // Method to create a Combo box for selecting cross-section areas
     private void createCrossSectionCombo(Table table, TableItem item, GeneralWire wire) {
         Combo comboCrossSection = new Combo(table, SWT.DROP_DOWN | SWT.READ_ONLY);
-        comboCrossSection.setItems(CROSS_SECTIONS);
-        setEditorForTable(table, item, comboCrossSection, 3);
-        item.setData("comboCrossSectionCombo", comboCrossSection);
-        selectClosestCrossSection(comboCrossSection, wire.getCrossSectionArea().getValueComponent());
+        comboCrossSection.setItems(CROSS_SECTIONS); // Set available cross-section values
+        setEditorForTable(table, item, comboCrossSection, 3); // Set combo as the editor for the table cell
+        item.setData("comboCrossSectionCombo", comboCrossSection); // Store combo in item data
+        selectClosestCrossSection(comboCrossSection, wire.getCrossSectionArea().getValueComponent()); // Select closest cross-section value
 
+        // Update wire name when selection changes
         comboCrossSection.addListener(SWT.Selection, event -> UIUtils.updateGeneralWireName(item));
     }
 
+    // Method to create a Text box for inputting current
     private void createCurrentText(Table table, TableItem item) {
         Text textCurrent = new Text(table, SWT.NONE);
-        textCurrent.setText("15.0");
-        setEditorForTable(table, item, textCurrent, 4);
+        textCurrent.setText("15.0"); // Set default current value
+        setEditorForTable(table, item, textCurrent, 4); // Set text box as the editor for the table cell
 
+        // Validate input to ensure it is a number
         textCurrent.addListener(SWT.Verify, event -> {
             String currentText = ((Text) event.widget).getText();
             String newText = currentText.substring(0, event.start) + event.text + currentText.substring(event.end);
 
             try {
-                Double.parseDouble(newText);
+                Double.parseDouble(newText); // Check if the new value is a valid double
             } catch (NumberFormatException e) {
-                event.doit = false;
+                event.doit = false; // Reject the input if invalid
             }
         });
-        item.setData("currentText", textCurrent);
+        item.setData("currentText", textCurrent); // Store text box in item data
     }
-
+    
+    // Method to create a Combo box for selecting insulation thickness
     private void createInsulationThicknessCombo(Table table, TableItem item) {
         Combo comboInsulationThickness = new Combo(table, SWT.DROP_DOWN | SWT.READ_ONLY);
-        comboInsulationThickness.setItems(INSULATION_THICKNESSES);
-        comboInsulationThickness.select(1);
-        setEditorForTable(table, item, comboInsulationThickness, 5);
-        item.setData("insulationThicknessCombo", comboInsulationThickness);
+        comboInsulationThickness.setItems(INSULATION_THICKNESSES); // Set available insulation thicknesses
+        comboInsulationThickness.select(1); // Select the default value
+        setEditorForTable(table, item, comboInsulationThickness, 5); // Set combo as the editor for the table cell
+        item.setData("insulationThicknessCombo", comboInsulationThickness); // Store combo in item data
     }
 
+    // Method to create a Combo box for selecting material
     private void createMaterialCombo(Table table, TableItem item) {
         Combo comboMaterial = new Combo(table, SWT.DROP_DOWN | SWT.READ_ONLY);
-        comboMaterial.setItems(MATERIALS);
-        comboMaterial.select(0);
-        setEditorForTable(table, item, comboMaterial, 6);
-        item.setData("cableMaterialCombo", comboMaterial);
+        comboMaterial.setItems(MATERIALS); // Set available materials
+        comboMaterial.select(0); // Select the default value
+        setEditorForTable(table, item, comboMaterial, 6); // Set combo as the editor for the table cell
+        item.setData("cableMaterialCombo", comboMaterial); // Store combo in item data
     }
-
+    
     private void setEditorForTable(Table table, TableItem item, Text text, int columnIndex) {
         TableEditor editor = new TableEditor(table);
         editor.grabHorizontal = true;
@@ -194,6 +217,7 @@ public class GeneralWireWindow {
         combo.select(closestIndex);
     }
 
+    // Method to create buttons for saving and closing
     private void createButtons() {
         // Create a composite to hold the buttons section
         Composite buttonComposite = new Composite(shell, SWT.NONE);
@@ -269,6 +293,7 @@ public class GeneralWireWindow {
         statusLabel.setText("Status: Ready"); // Set initial status text
     }
 
+    //update according to the changes made in the table
     private void updateValidGeneralWires() {
         TableItem[] items = table.getItems();
         for (int i = 0; i < items.length; i++) {
@@ -285,6 +310,7 @@ public class GeneralWireWindow {
         thermalSimulation.generateModifiedKBL();
     }
 
+    // Method to set up listeners for columns to manage user interactions
     private void setupColumnListeners() {
         TableColumn currentColumn = table.getColumn(4);
         currentColumn.addListener(SWT.Selection, event -> {
@@ -328,6 +354,7 @@ public class GeneralWireWindow {
         });
     }
 
+    // Method to open the shell and wait for user interaction
     private void openShell() {
         shell.setMaximized(true);
         shell.open();
